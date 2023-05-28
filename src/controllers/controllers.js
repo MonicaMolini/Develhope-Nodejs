@@ -3,13 +3,15 @@ import pgPromise from "pg-promise"
 
 const db = pgPromise()("postgres://postgres:postgres@localhost:5432/planets")
 console.log(db)
+
 const setupDb = async () => {
   await db.none(`
   DROP TABLE IF EXISTS planets;
 
   CREATE TABLE planets (
     id SERIAL NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    image TEXT
       )
   `);
 
@@ -18,7 +20,6 @@ const setupDb = async () => {
   await db.none(`INSERT INTO planets (name) VALUES ('Jupiter')`);
 };
 setupDb();
-
 
 
 const getAll = async (req, res) => {
@@ -72,4 +73,14 @@ const deleteById = async (req, res) => {
   res.status(200).json({ msg: "New Planet was deleted" });
 };
 
-export { getAll, getOneById, createNew, updateById, deleteById };
+const uploadImage = async (req, res) => {
+  const { id } = req.params;
+  const filename = req.file?.path;
+  if (filename) {
+    await db.none(`UPDATE planets SET image=$2 WHERE id=$1`, [id, filename]);
+    res.status(201).json({ msg: "Planet image uploaded successfully" });
+  } else {
+    res.status(400).json({ msg: "Planet image failed to upload" });
+  }
+};
+export { getAll, getOneById, createNew, updateById, deleteById, uploadImage };
