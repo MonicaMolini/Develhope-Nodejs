@@ -6,6 +6,6 @@
     "module": "es6",
     "target": "ES6"
   },
-  "include": ["./src/**/*.ts", "src/figlet.js"],
+  "include": ["./src/**/*.ts", "src/figlet.js", "src/planets.js"],
   "exclude": ["./src/**/*.test.js"]
 }
